@@ -120,9 +120,44 @@
           </p>
         </div>
 
+        <div class="project-filters" role="group" aria-label="Filter projects">
+          <button
+            type="button"
+            class="project-filter active"
+            data-filter="all"
+            aria-pressed="true"
+          >
+            All Projects
+          </button>
+          <button
+            type="button"
+            class="project-filter"
+            data-filter="fullstack"
+            aria-pressed="false"
+          >
+            Full Stack
+          </button>
+          <button
+            type="button"
+            class="project-filter"
+            data-filter="ai"
+            aria-pressed="false"
+          >
+            AI / ML
+          </button>
+          <button
+            type="button"
+            class="project-filter"
+            data-filter="frontend"
+            aria-pressed="false"
+          >
+            Frontend
+          </button>
+        </div>
+
         <div class="projects-container">
           <!-- Project 1 -->
-          <article class="project-card">
+          <article class="project-card" data-category="fullstack">
             <div class="project-preview preview-social">
               <div class="preview-window">
                 <div class="preview-dots">
@@ -151,17 +186,27 @@
 
             <div class="project-links">
               <a
-                href="https://github.com/pratikmaity017-hash"
+                href="https://github.com/pratikmaity017-hash/social-media-project"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="View MERN Social Media Platform source code on GitHub"
               >
                 GitHub <span>↗</span>
+              </a>
+
+              <a
+                href="https://social-media-project-weld.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View MERN Social Media Platform live demo"
+              >
+                Live Demo <span>↗</span>
               </a>
             </div>
           </article>
 
           <!-- Project 2 -->
-          <article class="project-card">
+          <article class="project-card" data-category="ai">
             <div class="project-preview preview-jobs">
               <div class="preview-window">
                 <div class="preview-dots">
@@ -196,18 +241,14 @@
             </div>
 
             <div class="project-links">
-              <a
-                href="https://github.com/pratikmaity017-hash"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub <span>↗</span>
-              </a>
+              <span class="project-link-unavailable">
+                Repository link coming soon
+              </span>
             </div>
           </article>
 
           <!-- Project 3: Shabdayon -->
-          <article class="project-card">
+          <article class="project-card" data-category="frontend">
             <div class="project-preview preview-shabdayon">
               <div class="shabdayon-preview">
                 <div class="shabdayon-preview-nav">
@@ -243,8 +284,18 @@
                 href="https://github.com/pratikmaity017-hash/final-shabdayan-website-frontend-version"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="View Shabdayon source code on GitHub"
               >
                 GitHub <span>↗</span>
+              </a>
+
+              <a
+                href="https://pratikmaity017-hash.github.io/final-shabdayan-website-frontend-version/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View Shabdayon live demo"
+              >
+                Live Demo <span>↗</span>
               </a>
             </div>
           </article>
@@ -353,10 +404,15 @@
       <!-- footer -->
       <footer>
         <p>&copy; 2026 Pratik | All Rights Reserved</p>
+
+        <a href="admin/login.html" class="admin-login-link">
+          <span aria-hidden="true">⚙</span>
+          Admin Login
+          <span class="admin-login-arrow" aria-hidden="true">↗</span>
+        </a>
       </footer>
     </div>
 
-    
     <script src="script.js"></script>
   </body>
 </html>

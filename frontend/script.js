@@ -27,11 +27,10 @@ if (contactForm) {
   });
 }
 
-
 const navLinks = document.querySelectorAll(".navbar .sections a");
 
 const sections = document.querySelectorAll(
-  "#hero, #about, #projects, #contact"
+  "#hero, #about, #projects, #contact",
 );
 
 function updateActiveLink() {
@@ -42,8 +41,7 @@ function updateActiveLink() {
   let currentSection = "hero";
 
   sections.forEach((section) => {
-    const sectionTop =
-      section.getBoundingClientRect().top + window.scrollY;
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
 
     if (scrollPosition + offset >= sectionTop) {
       currentSection = section.id;
@@ -72,3 +70,31 @@ window.addEventListener("load", updateActiveLink);
 
 updateActiveLink();
 
+const projectFilters = document.querySelectorAll(".project-filter");
+const projectCards = document.querySelectorAll(".project-card");
+
+console.log("Filters found:", projectFilters.length);
+console.log("Projects found:", projectCards.length);
+
+projectFilters.forEach((button) => {
+  button.addEventListener("click", () => {
+    const selectedFilter = button.dataset.filter;
+    console.log("Selected filter:", selectedFilter);
+
+    projectFilters.forEach((filterButton) => {
+      const isActive = filterButton === button;
+
+      filterButton.classList.toggle("active", isActive);
+      filterButton.setAttribute("aria-pressed", String(isActive));
+    });
+
+    projectCards.forEach((card) => {
+      const category = card.dataset.category;
+
+      const shouldShow =
+        selectedFilter === "all" || category === selectedFilter;
+
+      card.hidden = !shouldShow;
+    });
+  });
+});

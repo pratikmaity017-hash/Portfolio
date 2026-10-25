@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Portfolio Admin Dashboard" />
+    <title>Admin Dashboard | Portfolio</title>
+
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon">P</div>
+          <div>
+            <h2>Portfolio</h2>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+
+        <div class="sidebar-label">MAIN MENU</div>
+
+        <nav class="sidebar-nav" aria-label="Admin navigation">
+          <a href="#dashboard" class="nav-link active" data-page="dashboard">
+            <span class="nav-icon">▦</span>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="#projects" class="nav-link" data-page="projects">
+            <span class="nav-icon">▤</span>
+            <span>Manage Projects</span>
+          </a>
+
+          <a href="#add-project" class="nav-link" data-page="add-project">
+            <span class="nav-icon">＋</span>
+            <span>Add New Project</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a href="../index.html" class="back-to-site">
+            <span class="nav-icon">↗</span>
+            View Portfolio
+          </a>
+
+          <div class="admin-profile">
+            <div class="profile-avatar">A</div>
+            <div class="profile-info">
+              <strong>Administrator</strong>
+              <span>Portfolio Manager</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              class="menu-toggle"
+              id="menuToggle"
+              aria-label="Toggle sidebar"
+              aria-expanded="false"
+            >
+              ☰
+            </button>
+
+            <div>
+              <p class="topbar-eyebrow">PORTFOLIO MANAGEMENT</p>
+              <h1 id="pageTitle">Dashboard</h1>
+            </div>
+          </div>
+
+          <a href="../index.html" class="view-site-btn">
+            View Website <span>↗</span>
+          </a>
+        </header>
+
+        <!-- Dashboard Page -->
+        <section class="admin-page active" id="dashboard">
+          <div class="welcome-section">
+            <div>
+              <p class="section-label">OVERVIEW</p>
+              <h2>Welcome back, Admin!</h2>
+              <p>Manage your portfolio projects from one place.</p>
+            </div>
+
+            <button
+              type="button"
+              class="primary-btn"
+              data-go-page="add-project"
+            >
+              <span>＋</span> Add Project
+            </button>
+          </div>
+
+          <!-- Statistics -->
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Total Projects</span>
+                <span class="stat-icon blue">▤</span>
+              </div>
+              <h3 id="totalProjects">0</h3>
+              <p>Projects in your portfolio</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Full Stack</span>
+                <span class="stat-icon purple">⌘</span>
+              </div>
+              <h3 id="fullStackProjects">0</h3>
+              <p>Full-stack projects</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">AI / ML</span>
+                <span class="stat-icon green">✳</span>
+              </div>
+              <h3 id="aiProjects">0</h3>
+              <p>AI and machine learning</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Frontend</span>
+                <span class="stat-icon orange">◈</span>
+              </div>
+              <h3 id="frontendProjects">0</h3>
+              <p>Frontend projects</p>
+            </article>
+          </div>
+
+          <!-- Recent Projects -->
+          <section class="content-card">
+            <div class="card-heading">
+              <div>
+                <h3>Recent Projects</h3>
+                <p>Your portfolio project overview</p>
+              </div>
+
+              <button type="button" class="text-btn" data-go-page="projects">
+                View All →
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="projects-table">
+                <thead>
+                  <tr>
+                    <th>PROJECT</th>
+                    <th>CATEGORY</th>
+                    <th>TECHNOLOGIES</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+
+                <tbody id="recentProjectsTable">
+                  <tr>
+                    <td colspan="4" class="empty-state">
+                      No projects loaded yet.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <!-- Manage Projects Page -->
+        <section class="admin-page" id="projects">
+          <div class="page-intro">
+            <div>
+              <p class="section-label">PORTFOLIO CONTENT</p>
+              <h2>Manage Projects</h2>
+              <p>View, edit and manage your portfolio projects.</p>
+            </div>
+
+            <button
+              type="button"
+              class="primary-btn"
+              data-go-page="add-project"
+            >
+              ＋ Add Project
+            </button>
+          </div>
+
+          <section class="content-card">
+            <div class="project-toolbar">
+              <div class="search-box">
+                <span>⌕</span>
+                <input
+                  type="search"
+                  id="projectSearch"
+                  placeholder="Search projects..."
+                  aria-label="Search projects"
+                />
+              </div>
+
+              <select id="categoryFilter" aria-label="Filter by category">
+                <option value="all">All Categories</option>
+                <option value="fullstack">Full Stack</option>
+                <option value="ai">AI / ML</option>
+                <option value="frontend">Frontend</option>
+              </select>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="projects-table">
+                <thead>
+                  <tr>
+                    <th>PROJECT</th>
+                    <th>CATEGORY</th>
+                    <th>TECHNOLOGIES</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+
+                <tbody id="projectsTableBody">
+                  <tr>
+                    <td colspan="4" class="empty-state">
+                      No projects loaded yet.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <!-- Add / Edit Project Page -->
+        <section class="admin-page" id="add-project">
+          <div class="page-intro">
+            <div>
+              <p class="section-label">PROJECT MANAGEMENT</p>
+              <h2 id="formPageTitle">Add New Project</h2>
+              <p>Add a new project to your public portfolio.</p>
+            </div>
+          </div>
+
+          <section class="content-card form-card">
+            <form id="projectForm">
+              <input type="hidden" id="projectId" />
+
+              <div class="form-section-heading">
+                <h3>Project Information</h3>
+                <p>Enter the details that visitors will see.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label for="projectTitle">Project Title *</label>
+                  <input
+                    type="text"
+                    id="projectTitle"
+                    name="title"
+                    placeholder="e.g. MERN Social Media Platform"
+                    maxlength="100"
+                    required
+                  />
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="projectDescription">Project Description *</label>
+                  <textarea
+                    id="projectDescription"
+                    name="description"
+                    rows="4"
+                    placeholder="Describe what your project does..."
+                    maxlength="1000"
+                    required
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="projectCategory">Category *</label>
+                  <select id="projectCategory" name="category" required>
+                    <option value="">Select category</option>
+                    <option value="fullstack">Full Stack</option>
+                    <option value="ai">AI / ML</option>
+                    <option value="frontend">Frontend</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="projectTechnologies">Technologies *</label>
+                  <input
+                    type="text"
+                    id="projectTechnologies"
+                    name="technologies"
+                    placeholder="React, Node.js, MongoDB"
+                    required
+                  />
+                  <small>Separate each technology with a comma.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="githubUrl">GitHub Repository URL</label>
+                  <input
+                    type="url"
+                    id="githubUrl"
+                    name="githubUrl"
+                    placeholder="https://github.com/username/repository"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="liveUrl">Live Demo URL</label>
+                  <input
+                    type="url"
+                    id="liveUrl"
+                    name="liveUrl"
+                    placeholder="https://example.com"
+                  />
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="projectImage">Project Image URL (optional)</label>
+                  <input
+                    type="url"
+                    id="projectImage"
+                    name="imageUrl"
+                    placeholder="https://example.com/project-preview.png"
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="secondary-btn" id="cancelFormBtn">
+                  Cancel
+                </button>
+
+                <button type="submit" class="primary-btn" id="saveProjectBtn">
+                  Save Project
+                </button>
+              </div>
+
+              <p
+                id="formMessage"
+                class="form-message"
+                role="status"
+                aria-live="polite"
+              ></p>
+            </form>
+          </section>
+        </section>
+
+        <footer class="admin-footer">
+          <p>Portfolio Admin Panel <span>•</span> Management Dashboard</p>
+        </footer>
+      </main>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
