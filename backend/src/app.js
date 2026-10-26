@@ -31,20 +31,14 @@ if (!process.env.SESSION_SECRET) {
 
 app.use(
   session({
-    name: "portfolio.sid",
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "your-secret",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      collectionName: "sessions",
-      ttl: 60 * 60 * 8,
-    }),
+    name: "portfolio.sid",
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 1000 * 60 * 60 * 8,
+      secure: false, // লোকাল ডেভেলপমেন্টে (http) false রাখতে হবে
+      sameSite: "lax", // একই হোস্টনেম (localhost) ব্যবহার করলে এটি কাজ করবে
     },
   }),
 );

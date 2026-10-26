@@ -6,7 +6,7 @@ const loginMessage = document.getElementById("loginMessage");
 let csrfToken = null;
 
 async function getCsrfToken() {
-  const response = await fetch("http://localhost:3000/api/auth/csrf-token", {
+  const response = await fetch("http://127.0.0.1:3000/api/auth/csrf-token", {
     method: "GET",
     credentials: "include",
   });
@@ -30,7 +30,7 @@ loginForm.addEventListener("submit", async (event) => {
       await getCsrfToken();
     }
 
-    const response = await fetch("http://localhost:3000/api/auth/login", {
+    const response = await fetch("http://127.0.0.1:3000/api/auth/login", {
       method: "POST",
       credentials: "include",
       headers: {

@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const Admin = require("../models/admin.model");
 
 // POST /api/auth/login
+// POST /api/auth/login
 exports.login = async (req, res, next) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
@@ -19,18 +20,29 @@ exports.login = async (req, res, next) => {
       });
     }
 
+
     const admin = await Admin.findOne({ email }).select("+passwordHash");
+
+   
 
     if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid password or email",
       });
     }
+
+    // [FIX]: সেশন রিজেনারেট করার আগে ওল্ড সেশনের CSRF secret ব্যাকআপ রাখো
+    const dummyCsrfSecret = req.session.csrfSecret;
 
     // Regenerate session ID after successful authentication.
     req.session.regenerate((error) => {
       if (error) return next(error);
+
+      // [FIX]: নতুন সেশনে ব্যাকআপ রাখা CSRF secretটি আবার এসাইন করে দাও
+      if (dummyCsrfSecret) {
+        req.session.csrfSecret = dummyCsrfSecret;
+      }
 
       req.session.adminId = admin._id.toString();
 
