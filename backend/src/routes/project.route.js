@@ -2,6 +2,7 @@ const express = require("express");
 
 const {
   getProjects,
+  getAdminProjects,
   createProject,
   updateProject,
   deleteProject,
@@ -9,14 +10,21 @@ const {
 
 const { requireAdmin } = require("../middlewares/authmiddleware");
 
+const { verifyCsrfToken } = require("../middlewares/csrfProtection");
+
 const router = express.Router();
 
-// Public: view published projects
+// Public: published projects only
 router.get("/", getProjects);
 
-// Admin only: modify projects
-router.post("/", requireAdmin, createProject);
-router.patch("/:id", requireAdmin, updateProject);
-router.delete("/:id", requireAdmin, deleteProject);
+// Admin: all projects, including unpublished
+router.get("/admin", requireAdmin, getAdminProjects);
+
+// Admin: protected write operations
+router.post("/", requireAdmin, verifyCsrfToken, createProject);
+
+router.patch("/:id", requireAdmin, verifyCsrfToken, updateProject);
+
+router.delete("/:id", requireAdmin, verifyCsrfToken, deleteProject);
 
 module.exports = router;

@@ -7,8 +7,8 @@ const PORT = config.PORT || 3000;
 async function startServer() {
   try {
     await connectDB();
-    app.listen(PORT, () => {
-      console.log("server is running on port 3000");
+    app.listen(PORT,"0.0.0.0", () => {
+      console.log(`server is running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error.message);

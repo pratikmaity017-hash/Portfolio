@@ -1,17 +1,17 @@
 const bcrypt = require("bcryptjs");
 const Admin = require("../models/admin.model");
+const crypto = require("crypto");
 
 // POST /api/auth/login
 // POST /api/auth/login
 exports.login = async (req, res, next) => {
   try {
-    const email = req.body.email?.trim().toLowerCase();
-    const password = req.body.password;
+    const { email: rawEmail, password } = req.body;
 
     if (
-      typeof email !== "string" ||
+      typeof rawEmail !== "string" ||
       typeof password !== "string" ||
-      !email ||
+      !rawEmail.trim() ||
       !password
     ) {
       return res.status(400).json({
@@ -20,10 +20,10 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    const email = rawEmail.trim().toLowerCase();
+    // const password = req.body.password;
 
     const admin = await Admin.findOne({ email }).select("+passwordHash");
-
-   
 
     if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {
       return res.status(401).json({
@@ -33,18 +33,40 @@ exports.login = async (req, res, next) => {
     }
 
     // [FIX]: সেশন রিজেনারেট করার আগে ওল্ড সেশনের CSRF secret ব্যাকআপ রাখো
-    const dummyCsrfSecret = req.session.csrfSecret;
+    // const dummyCsrfSecret = req.session.csrfSecret;
 
     // Regenerate session ID after successful authentication.
+    // req.session.regenerate((error) => {
+    //   if (error) return next(error);
+
+    //   // [FIX]: নতুন সেশনে ব্যাকআপ রাখা CSRF secretটি আবার এসাইন করে দাও
+    //   if (dummyCsrfSecret) {
+    //     req.session.csrfSecret = dummyCsrfSecret;
+    //   }
+
+    //   req.session.adminId = admin._id.toString();
+
+    //   req.session.save((saveError) => {
+    //     if (saveError) return next(saveError);
+
+    //     res.status(200).json({
+    //       success: true,
+    //       message: "Login successful",
+    //       admin: {
+    //         id: admin._id,
+    //         email: admin.email,
+    //       },
+    //     });
+    //   });
+    // });
+
     req.session.regenerate((error) => {
       if (error) return next(error);
 
-      // [FIX]: নতুন সেশনে ব্যাকআপ রাখা CSRF secretটি আবার এসাইন করে দাও
-      if (dummyCsrfSecret) {
-        req.session.csrfSecret = dummyCsrfSecret;
-      }
-
       req.session.adminId = admin._id.toString();
+
+      // Create a new CSRF token for the new session.
+      req.session.csrfToken = crypto.randomBytes(32).toString("hex");
 
       req.session.save((saveError) => {
         if (saveError) return next(saveError);
@@ -56,6 +78,7 @@ exports.login = async (req, res, next) => {
             id: admin._id,
             email: admin.email,
           },
+          csrfToken: req.session.csrfToken,
         });
       });
     });

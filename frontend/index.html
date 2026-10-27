@@ -155,150 +155,17 @@
           </button>
         </div>
 
-        <div class="projects-container">
-          <!-- Project 1 -->
-          <article class="project-card" data-category="fullstack">
-            <div class="project-preview preview-social">
-              <div class="preview-window">
-                <div class="preview-dots">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="preview-social-content">
-                  <div class="preview-avatar"></div>
-                  <div class="preview-lines"><span></span><span></span></div>
-                </div>
-                <div class="preview-post"></div>
-              </div>
-            </div>
-            <div class="project-number">PROJECT 01</div>
-            <h3>MERN Social Media Platform</h3>
-            <p>
-              A social media web application with user authentication, image
-              uploads, and a responsive interface.
-            </p>
+        <div
+          id="projectsStatus"
+          class="projects-status"
+          role="status"
+          aria-live="polite"
+        >
+          Loading projects...
+        </div>
 
-            <div class="project-tech">
-              <span>React</span>
-              <span>Node.js</span>
-              <span>Express</span>
-              <span>MongoDB</span>
-            </div>
-
-            <div class="project-links">
-              <a
-                href="https://github.com/pratikmaity017-hash/social-media-project"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="View MERN Social Media Platform source code on GitHub"
-              >
-                GitHub <span>↗</span>
-              </a>
-
-              <a
-                href="https://social-media-project-weld.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="View MERN Social Media Platform live demo"
-              >
-                Live Demo <span>↗</span>
-              </a>
-            </div>
-          </article>
-
-          <!-- Project 2 -->
-          <article class="project-card" data-category="ai">
-            <div class="project-preview preview-jobs">
-              <div class="preview-window">
-                <div class="preview-dots">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="preview-job-row">
-                  <span></span>
-                  <div></div>
-                </div>
-                <div class="preview-job-row">
-                  <span></span>
-                  <div></div>
-                </div>
-                <div class="preview-job-row">
-                  <span></span>
-                  <div></div>
-                </div>
-              </div>
-            </div>
-            <div class="project-number">PROJECT 02</div>
-            <h3>MERN Job Portal</h3>
-            <p>
-              A job portal featuring authentication, job listings, resume
-              handling, and AI-assisted resume matching.
-            </p>
-
-            <div class="project-tech">
-              <span>React</span>
-              <span>Node.js</span>
-              <span>MongoDB</span>
-              <span>Python</span>
-            </div>
-
-            <div class="project-links">
-              <span class="project-link-unavailable">
-                Repository link coming soon
-              </span>
-            </div>
-          </article>
-
-          <!-- Project 3: Shabdayon -->
-          <article class="project-card" data-category="frontend">
-            <div class="project-preview preview-shabdayon">
-              <div class="shabdayon-preview">
-                <div class="shabdayon-preview-nav">
-                  <span class="shabdayon-logo">Shabdayon</span>
-                  <span class="shabdayon-menu"></span>
-                </div>
-
-                <div class="shabdayon-preview-content">
-                  <span class="shabdayon-tag">DISCOVER</span>
-                  <div class="shabdayon-line shabdayon-line-large"></div>
-                  <div class="shabdayon-line shabdayon-line-small"></div>
-                  <div class="shabdayon-button"></div>
-                </div>
-              </div>
-            </div>
-            <div class="project-number">PROJECT 03</div>
-
-            <h3>Shabdayon — Website Project</h3>
-
-            <p>
-              A responsive website project featuring a polished frontend,
-              interactive elements, and a user-friendly browsing experience.
-            </p>
-
-            <div class="project-tech">
-              <span>HTML</span>
-              <span>CSS</span>
-              <span>JavaScript</span>
-            </div>
-
-            <div class="project-links">
-              <a
-                href="https://github.com/pratikmaity017-hash/final-shabdayan-website-frontend-version"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="View Shabdayon source code on GitHub"
-              >
-                GitHub <span>↗</span>
-              </a>
-
-              <a
-                href="https://pratikmaity017-hash.github.io/final-shabdayan-website-frontend-version/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="View Shabdayon live demo"
-              >
-                Live Demo <span>↗</span>
-              </a>
-            </div>
-          </article>
+        <div class="projects-container" id="projectsContainer">
+          <!-- Project cards will be rendered from the backend API. -->
         </div>
       </section>
 

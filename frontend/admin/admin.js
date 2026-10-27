@@ -1,4 +1,54 @@
-const STORAGE_KEY = "portfolio_admin_projects_v1";
+const API_BASE_URL = "https://portfolio-z7ut.onrender.com/api";
+
+async function checkAdminSession() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      window.location.replace("login.html");
+      return false;
+    }
+
+    if (!response.ok) {
+      throw new Error("Unable to verify admin session.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Session verification failed:", error);
+
+    document.body.textContent =
+      "Unable to connect to the server. Please try again.";
+
+    return false;
+  }
+}
+
+// ADD THESE TWO FUNCTIONS HERE
+
+function categoryToApi(category) {
+  const categories = {
+    fullstack: "Full Stack",
+    ai: "AI",
+    frontend: "Frontend",
+  };
+
+  return categories[category] || category;
+}
+
+function categoryFromApi(category) {
+  const categories = {
+    "Full Stack": "fullstack",
+    AI: "ai",
+    ML: "ai",
+    Frontend: "frontend",
+  };
+
+  return categories[category] || "frontend";
+}
 
 // ========================================
 // DOM ELEMENTS
@@ -33,97 +83,91 @@ const projectsTableBody = document.getElementById("projectsTableBody");
 const projectSearch = document.getElementById("projectSearch");
 const categoryFilter = document.getElementById("categoryFilter");
 
-// ========================================
-// INITIAL DEMO DATA
-// ========================================
+let projects = [];
 
-const initialProjects = [
-  {
-    id: "demo-social-media",
-    title: "MERN Social Media Platform",
-    description:
-      "A full-stack social media application with authentication and media uploads.",
-    category: "fullstack",
-    technologies: ["React", "Node.js", "Express", "MongoDB"],
-    githubUrl: "https://github.com/pratikmaity017-hash/social-media-project",
-    liveUrl: "https://social-media-project-weld.vercel.app/",
-    imageUrl: "",
-  },
-  {
-    id: "demo-job-portal",
-    title: "MERN Job Portal",
-    description:
-      "A job portal with resume matching powered by a Python FastAPI service.",
-    category: "ai",
-    technologies: ["React", "Node.js", "MongoDB", "Python"],
-    githubUrl: "",
-    liveUrl: "",
-    imageUrl: "",
-  },
-  {
-    id: "demo-shabdayon",
-    title: "Shabdayon Website",
-    description:
-      "A responsive website project built with HTML, CSS and JavaScript.",
-    category: "frontend",
-    technologies: ["HTML", "CSS", "JavaScript"],
-    githubUrl:
-      "https://github.com/pratikmaity017-hash/final-shabdayan-website-frontend-version",
-    liveUrl:
-      "https://pratikmaity017-hash.github.io/final-shabdayan-website-frontend-version/",
-    imageUrl: "",
-  },
-];
+let csrfToken = null;
 
-// ========================================
-// PROJECT STORAGE
-// ========================================
+async function getCsrfToken() {
+  const response = await fetch(`${API_BASE_URL}/auth/csrf-token`, {
+    method: "GET",
+    credentials: "include",
+  });
 
-function loadProjects() {
-  try {
-    const savedProjects = localStorage.getItem(STORAGE_KEY);
+  const result = await response.json();
 
-    if (savedProjects === null) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialProjects));
-
-      return [...initialProjects];
-    }
-
-    const parsedProjects = JSON.parse(savedProjects);
-
-    if (!Array.isArray(parsedProjects)) {
-      throw new Error("Stored project data is invalid.");
-    }
-
-    return parsedProjects;
-  } catch (error) {
-    console.error("Could not load projects:", error);
-
-    showFormMessage(
-      "Could not load saved projects. Check browser storage.",
-      "error",
-    );
-
-    return [];
+  if (!response.ok || !result.csrfToken) {
+    throw new Error(result.message || "Unable to get CSRF token.");
   }
+
+  csrfToken = result.csrfToken;
+  return csrfToken;
 }
 
-let projects = loadProjects();
+async function apiRequest(path, options = {}) {
+  const method = (options.method || "GET").toUpperCase();
 
-function saveProjects() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  const headers = {
+    ...(options.body ? { "Content-Type": "application/json" } : {}),
+    ...options.headers,
+  };
 
-    return true;
-  } catch (error) {
-    console.error("Could not save projects:", error);
-    showFormMessage(
-      "Could not save data. Browser storage may be unavailable or full.",
-      "error",
-    );
+  if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+    if (!csrfToken) {
+      await getCsrfToken();
+    }
 
-    return false;
+    headers["X-CSRF-Token"] = csrfToken;
   }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    method,
+    headers,
+    credentials: "include",
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (response.status === 401) {
+    window.location.replace("login.html");
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  if (!response.ok) {
+    throw new Error(result.message || `Request failed (${response.status}).`);
+  }
+
+  return result;
+}
+
+function normalizeProject(project) {
+  return {
+    ...project,
+    id: project._id || project.id,
+    category: categoryFromApi(project.category),
+    technologies: Array.isArray(project.technologies)
+      ? project.technologies
+      : [],
+    githubUrl: project.githubUrl || "",
+    liveUrl: project.liveUrl || "",
+    imageUrl: project.imageUrl || "",
+  };
+}
+
+async function loadProjects() {
+  const result = await apiRequest("/projects/admin");
+
+  if (!Array.isArray(result.data)) {
+    throw new Error("Invalid project data received from server.");
+  }
+
+  projects = result.data.map(normalizeProject);
+}
+
+async function refreshProjects() {
+  await loadProjects();
+  renderDashboard();
+  renderProjectsTable();
 }
 
 // ========================================
@@ -459,32 +503,28 @@ function editProject(projectId) {
   showPage("add-project");
 }
 
-function deleteProject(projectId) {
+async function deleteProject(projectId) {
   const project = projects.find((item) => item.id === projectId);
 
-  if (!project) {
-    return;
-  }
+  if (!project) return;
 
   const confirmed = window.confirm(
     `Are you sure you want to delete "${project.title}"?`,
   );
 
-  if (!confirmed) {
-    return;
+  if (!confirmed) return;
+
+  try {
+    await apiRequest(`/projects/${encodeURIComponent(projectId)}`, {
+      method: "DELETE",
+    });
+
+    await refreshProjects();
+    showFormMessage("Project deleted successfully.", "success");
+  } catch (error) {
+    console.error("Delete project failed:", error);
+    showFormMessage(error.message || "Could not delete project.", "error");
   }
-
-  const previousProjects = projects;
-
-  projects = projects.filter((item) => item.id !== projectId);
-
-  if (!saveProjects()) {
-    projects = previousProjects;
-    return;
-  }
-
-  renderDashboard();
-  renderProjectsTable();
 }
 
 // ========================================
@@ -520,12 +560,10 @@ function isValidOptionalURL(value) {
   }
 }
 
-projectForm.addEventListener("submit", (event) => {
+projectForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (!projectForm.reportValidity()) {
-    return;
-  }
+  if (!projectForm.reportValidity()) return;
 
   const title = projectTitleInput.value.trim();
   const description = projectDescriptionInput.value.trim();
@@ -542,7 +580,6 @@ projectForm.addEventListener("submit", (event) => {
 
   if (!title || !description || technologies.length === 0) {
     showFormMessage("Please complete all required fields.", "error");
-
     return;
   }
 
@@ -557,43 +594,48 @@ projectForm.addEventListener("submit", (event) => {
     !isValidOptionalURL(imageUrl)
   ) {
     showFormMessage("URLs must start with http:// or https://.", "error");
-
     return;
   }
 
   const projectData = {
-    id: projectIdInput.value || crypto.randomUUID(),
     title,
     description,
-    category,
+    category: categoryToApi(category),
     technologies,
     githubUrl,
     liveUrl,
     imageUrl,
   };
 
-  const existingIndex = projects.findIndex(
-    (project) => project.id === projectData.id,
-  );
+  const projectId = projectIdInput.value.trim();
 
-  const previousProjects = [...projects];
+  saveProjectBtn.disabled = true;
+  showFormMessage("Saving project...", "");
 
-  if (existingIndex >= 0) {
-    projects[existingIndex] = projectData;
-  } else {
-    projects.push(projectData);
+  try {
+    if (projectId) {
+      await apiRequest(`/projects/${encodeURIComponent(projectId)}`, {
+        method: "PATCH",
+        body: JSON.stringify(projectData),
+      });
+    } else {
+      await apiRequest("/projects", {
+        method: "POST",
+        body: JSON.stringify(projectData),
+      });
+    }
+
+    await refreshProjects();
+
+    resetProjectForm();
+    showPage("projects");
+    showFormMessage("Project saved successfully.", "success");
+  } catch (error) {
+    console.error("Save project failed:", error);
+    showFormMessage(error.message || "Could not save project.", "error");
+  } finally {
+    saveProjectBtn.disabled = false;
   }
-
-  if (!saveProjects()) {
-    projects = previousProjects;
-    return;
-  }
-
-  renderDashboard();
-  renderProjectsTable();
-
-  resetProjectForm();
-  showPage("projects");
 });
 
 // ========================================
@@ -609,6 +651,22 @@ cancelFormBtn.addEventListener("click", () => {
 // INITIAL RENDER
 // ========================================
 
-renderDashboard();
-renderProjectsTable();
-showPage("dashboard");
+async function initializeAdminDashboard() {
+  const isAuthenticated = await checkAdminSession();
+
+  if (!isAuthenticated) return;
+
+  try {
+    await refreshProjects();
+    showPage("dashboard");
+  } catch (error) {
+    console.error("Could not initialize dashboard:", error);
+    showFormMessage(
+      error.message || "Could not load projects from the server.",
+      "error",
+    );
+  }
+}
+
+initializeAdminDashboard();
+
